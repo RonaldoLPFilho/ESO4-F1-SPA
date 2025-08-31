@@ -3,7 +3,7 @@ import type { ClassifyUploadResponse } from "../types/ClassifyUploadResponse";
 import { postUpload } from "../helpers/rest-service";
 import { formatPct } from "../helpers/data-helpers";
 
-function UploadCard(){
+export function UploadCard(){
     const [file, setFile] = useState<File | null>(null);
     const [result, setResult] = useState<ClassifyUploadResponse | null>(null);
     const [loading, setLoading] = useState(false);
@@ -31,7 +31,7 @@ function UploadCard(){
     }
 
     return (
-        <div className="w-full max-w-xl bg-white/60 backdrop-blur rounded-2xl shadow p-5 border border-slate-200">
+        <div className="w-full max-w-3xl bg-white/60 backdrop-blur rounded-2xl shadow p-5 border border-slate-200">
             <h2 className="text-xl font-semibold mb-3">Upload de imagem</h2>
             <div className="flex items-center gap-3">
                 <input 
