@@ -1,3 +1,4 @@
+import { SummaryCard } from "./components/SummaryCard"
 import { UploadCard } from "./components/UploadCard"
 import { WebcamCard } from "./components/WebcamCard"
 import { API_BASE } from "./config"
@@ -18,6 +19,7 @@ function App() {
         <div className="grid grid-cols-1 gap-6">
           <UploadCard/>
           <WebcamCard/>
+          <SummaryCard/>
         </div>
       </div>
     </div>
