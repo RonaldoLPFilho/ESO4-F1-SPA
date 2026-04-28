@@ -3,6 +3,8 @@ import Dashboard from "./pages/Dashboard";
 import Predict from "./pages/Predict";
 import { Navigation } from "./components/Nav";
 import AlertsPage from "./pages/Alerts";
+import DataLakePage from "./pages/DataLake";
+import IotAutomationPage from "./pages/IotAutomation";
 
 export default function AppRoutes() {
     return (
@@ -13,6 +15,8 @@ export default function AppRoutes() {
           <Route path="/home" element={<Dashboard />} />
           <Route path="/predict" element={<Predict />} />
           <Route path="/alerts" element={<AlertsPage />} />
+          <Route path="/datalake" element={<DataLakePage />} />
+          <Route path="/iot" element={<IotAutomationPage />} />
         </Routes>
       </BrowserRouter>
     )

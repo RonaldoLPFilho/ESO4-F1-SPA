@@ -4,8 +4,6 @@ import type { AlertContact } from "../types/notification/AlertContact";
 import type { AlertEvent } from "../types/notification/AlertEvent";
 import { API_BASE } from "../config";
 
-const apiBase = (import.meta as any).env?.VITE_API_BASE || "";
-
 async function asJson<T>(res: Response): Promise<T> {
   if (!res.ok) throw new Error((await res.text()) || res.statusText);
   return res.json();

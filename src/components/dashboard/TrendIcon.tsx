@@ -4,7 +4,6 @@ function TrendIcon({ delta }: { delta?: number }) {
   if (delta == null) return null;
   const up = delta > 0;
   const down = delta < 0;
-  const neutral = delta === 0;
   return (
     <span
       className={`inline-flex items-center text-xs ml-2 ${

@@ -1,4 +1,4 @@
-import { BarChart3, Camera, SirenIcon } from "lucide-react";
+import { BarChart3, Camera, Cpu, Database, SirenIcon } from "lucide-react";
 import { NavLink, Link } from "react-router-dom";
 
 export function Navigation() {
@@ -53,6 +53,26 @@ export function Navigation() {
             >
               <SirenIcon className="h-4 w-4" />
               Alertas
+            </NavLink>
+
+            <NavLink
+              to="/iot"
+              className={({ isActive }) =>
+                `${baseLinkCls} ${isActive ? activeCls : inactiveCls}`
+              }
+            >
+              <Cpu className="h-4 w-4" />
+              IoT
+            </NavLink>
+
+            <NavLink
+              to="/datalake"
+              className={({ isActive }) =>
+                `${baseLinkCls} ${isActive ? activeCls : inactiveCls}`
+              }
+            >
+              <Database className="h-4 w-4" />
+              Data Lake
             </NavLink>
           </div>
 
