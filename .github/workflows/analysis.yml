@@ -1,0 +1,49 @@
+name: Code & Security Analysis
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: ["**"]
+
+jobs:
+  lint-spa:
+    name: Lint (ESLint)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npx eslint . --max-warnings=999
+        continue-on-error: true
+
+  vuln-npm:
+    name: Vulnerabilidades – npm audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm audit --audit-level=high
+        continue-on-error: true
+
+  trivy:
+    name: Vulnerabilidades – Trivy (imagem Docker)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build image
+        run: docker build -t ecosmart-spa .
+      - name: Scan with Trivy
+        uses: aquasecurity/trivy-action@0.30.0
+        with:
+          image-ref: ecosmart-spa
+          severity: HIGH,CRITICAL
+          exit-code: "0"
+          format: table
