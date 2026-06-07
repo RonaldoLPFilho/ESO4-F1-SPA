@@ -19,7 +19,7 @@ export function Navigation() {
             </Link>
 
             <span className="hidden md:inline-flex items-center gap-2 bg-white border rounded-xl px-3 py-1 text-sm text-slate-700">
-              FIAP • ESO4 Fase-2
+              FIAP • ESO4 Fase-7
             </span>
           </div>
 
@@ -42,7 +42,7 @@ export function Navigation() {
               }
             >
               <Camera className="h-4 w-4" />
-              Analisar Imagem
+              Analisar Imagem avulsa
             </NavLink>
 
             <NavLink

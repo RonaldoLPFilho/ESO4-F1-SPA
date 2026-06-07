@@ -12,6 +12,8 @@ export function WebcamCard(){
     const [res, setRes] = useState<ClassifyWebcamResponse | null>(null);
     const [err, setErr] = useState<string | null>(null);
     const timerRef = useRef<number | null>(null);
+    const streamingRef = useRef(false);
+    const inFlightRef = useRef(false);
 
     useEffect(() => {
         return () => {
@@ -26,6 +28,7 @@ export function WebcamCard(){
             if(videoRef.current){
                 videoRef.current.srcObject = media as any;
                 await videoRef.current.play();
+                streamingRef.current = true;
                 setStreaming(true);
                 loop();
             }
@@ -35,10 +38,11 @@ export function WebcamCard(){
     }
 
     async function stopStreaming(){
+        streamingRef.current = false;
         setStreaming(false);
         if(timerRef.current){
             window.clearInterval(timerRef.current);
-            timerRef.current = null
+            timerRef.current = null;
         }
         const stream = (videoRef.current?.srcObject as MediaStream | undefined);
         stream?.getTracks().forEach(t => t.stop());
@@ -52,7 +56,7 @@ export function WebcamCard(){
     }
 
     async function captureAndSend(){
-        if(inFlight || !streaming) return;
+        if(inFlightRef.current || !streamingRef.current) return;
         const video = videoRef.current;
         const canvas = canvasRef.current;
 
@@ -67,12 +71,14 @@ export function WebcamCard(){
         const base64 = dataUrl.split(",")[1];
 
         try{
+            inFlightRef.current = true;
             setInFlight(true);
             const r = await postWebcamFrame(base64, "frame.jpg");
             setRes(r);
         }catch (e: any){
             setErr(e?.message || String(e));
         }finally{
+            inFlightRef.current = false;
             setInFlight(false);
         }
     }
@@ -109,19 +115,30 @@ export function WebcamCard(){
                     <canvas ref={canvasRef} className="hidden" />
                     {err && <p className="text-sm text-red-600">{err}</p>}
                 </div>
-                <div className="p-4 rounded-xl bg-slate-50 border w-full">
-                    <h3 className="font-medium mb-2">Resultado(Tempo real)</h3>
+                <div className="p-4 rounded-xl bg-slate-50 border w-full flex flex-col gap-3">
+                    <h3 className="font-medium">Resultado (Tempo real)</h3>
                     {!res ? (
-                        <p className="text-sm text-slate-600">Aguardando...</p>
+                        <p className="text-sm text-slate-500">Aguardando análise...</p>
                     ) : (
-                        <div className="grid grid:cols-2 gap-3 text-sm">
-                            <div className="p-3 rounded-xl bg-white border">Rótulo: <span className="font-semibold capitalize">{res.predictedLabel}</span></div>
-                            <div className="p-3 rounded-xl bg-white border">Confiança: <span className="font-semibold">{formatPct(res.confidence)}</span></div>
-                            <div className="p-3 rounded-xl bg-white border">Modelo: <span className="font-mono">{res.modelVersion}</span></div>
-                            <div className="p-3 rounded-xl bg-white border">Fonte: <span className="font-mono">{res.source}</span></div>
-                        </div>
+                        <>
+                            <div className={`flex items-center gap-3 p-3 rounded-xl border text-white font-semibold text-base ${res.predictedLabel === "saudavel" ? "bg-green-500 border-green-600" : res.predictedLabel === "doente" ? "bg-red-500 border-red-600" : "bg-slate-400 border-slate-500"}`}>
+                                <span className="text-2xl">{res.predictedLabel === "saudavel" ? "✓" : res.predictedLabel === "doente" ? "✗" : "?"}</span>
+                                <span className="capitalize">{res.predictedLabel}</span>
+                                <span className="ml-auto text-sm font-normal opacity-90">{formatPct(res.confidence)}</span>
+                            </div>
+                            <div className="grid grid-cols-2 gap-2 text-sm">
+                                <div className="p-3 rounded-xl bg-white border">
+                                    <p className="text-xs text-slate-500 mb-1">Alimento</p>
+                                    <p className="font-semibold capitalize">{res.food ?? "—"}</p>
+                                </div>
+                                <div className="p-3 rounded-xl bg-white border">
+                                    <p className="text-xs text-slate-500 mb-1">Analisado em</p>
+                                    <p className="font-semibold">{new Date(res.timestamp).toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "medium" })}</p>
+                                </div>
+                            </div>
+                        </>
                     )}
-                    <p className="mt-2 text-xs text-slate-500">Status: {inFlight ? "Enviando frame :)" : streaming ? "rodando" : "parado"}</p>
+                    <p className="text-xs text-slate-400">Status: {inFlight ? "analisando..." : streaming ? "rodando" : "parado"}</p>
                 </div>
             </div>
         </div>
